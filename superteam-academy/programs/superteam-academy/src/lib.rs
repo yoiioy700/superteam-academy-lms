@@ -6,6 +6,10 @@ pub mod error;
 pub mod utils;
 pub mod events;
 
+// Tests module (compile conditionally)
+#[cfg(test)]
+pub mod tests;
+
 use state::*;
 use instructions::*;
 use error::*;
