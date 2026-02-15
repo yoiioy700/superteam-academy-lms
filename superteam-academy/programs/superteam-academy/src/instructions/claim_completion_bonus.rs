@@ -1,4 +1,5 @@
 use anchor_lang::prelude::*;
+use anchor_spl::token_interface::{Token2022, TokenAccount, Mint, MintTo};
 
 use crate::state::*;
 use crate::error::AcademyError;
@@ -43,6 +44,31 @@ pub struct ClaimCompletionBonus<'info> {
         bump = enrollment.bump,
     )]
     pub enrollment: Account<'info, Enrollment>,
+    
+    /// XP Mint (Token-2022)
+    #[account(
+        mut,
+        address = config.current_mint @ AcademyError::SeasonNotActive,
+    )]
+    pub xp_mint: InterfaceAccount<'info, Mint>,
+    
+    /// Learner's XP token account
+    #[account(
+        mut,
+        token::mint = xp_mint,
+        token::authority = learner,
+    )]
+    pub learner_token: InterfaceAccount<'info, TokenAccount>,
+    
+    /// Config PDA as mint authority
+    /// CHECK: Derived from config PDA
+    #[account(
+        seeds = [Config::SEED],
+        bump = config.bump,
+    )]
+    pub config_pda: AccountInfo<'info>,
+    
+    pub token_program: Program<'info, Token2022>,
 }
 
 pub fn claim_completion_bonus(ctx: Context<ClaimCompletionBonus>) -> Result<()> {
@@ -69,10 +95,26 @@ pub fn claim_completion_bonus(ctx: Context<ClaimCompletionBonus>) -> Result<()> 
     // Mark claimed
     enrollment.bonus_claimed = true;
     
-    // TODO: Mint completion bonus XP
+    // Mint completion bonus XP
+    let bonus_amount = course.completion_bonus_xp as u64;
+    let config_seeds = &[Config::SEED, &[config.bump]];
+    let signer_seeds = &[&config_seeds[..]];
+    
+    let cpi_accounts = MintTo {
+        mint: ctx.accounts.xp_mint.to_account_info(),
+        to: ctx.accounts.learner_token.to_account_info(),
+        authority: ctx.accounts.config_pda.clone(),
+    };
+    let cpi_ctx = CpiContext::new_with_signer(
+        ctx.accounts.token_program.to_account_info(),
+        cpi_accounts,
+        signer_seeds,
+    );
+    anchor_spl::token_interface::mint_to(cpi_ctx, bonus_amount)?;
+    
     msg!(
         "Completion bonus claimed: {} XP for {}",
-        course.completion_bonus_xp,
+        bonus_amount,
         course.course_id
     );
     

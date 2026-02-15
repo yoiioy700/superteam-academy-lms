@@ -4,10 +4,12 @@ pub mod state;
 pub mod instructions;
 pub mod error;
 pub mod utils;
+pub mod events;
 
 use state::*;
 use instructions::*;
 use error::*;
+use events::*;
 
 declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 

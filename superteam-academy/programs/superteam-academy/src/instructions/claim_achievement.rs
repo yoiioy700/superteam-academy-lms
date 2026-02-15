@@ -1,6 +1,5 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token_interface::{Token2022, TokenAccount, Mint};
-use anchor_spl::token_2022::spl_token_2022::instruction::AuthorityType;
+use anchor_spl::token_interface::{Token2022, TokenAccount, Mint, MintTo};
 
 use crate::state::*;
 use crate::error::AcademyError;
@@ -15,6 +14,7 @@ pub struct ClaimAchievement<'info> {
     
     /// Config PDA
     #[account(
+        mut,
         seeds = [Config::SEED],
         bump = config.bump,
         has_one = backend_signer @ AcademyError::Unauthorized,
@@ -22,17 +22,23 @@ pub struct ClaimAchievement<'info> {
     pub config: Account<'info, Config>,
     
     /// Learner wallet
-    pub learner: SystemAccount<'info>,
+    /// CHECK: Verified by PDA
+    pub learner: AccountInfo<'info>,
     
     /// LearnerProfile PDA
     #[account(
         mut,
         seeds = [LearnerProfile::SEED, learner.key().as_ref()],
         bump = learner_profile.bump,
+        constraint = learner_profile.authority == learner.key() @ AcademyError::Unauthorized,
     )]
     pub learner_profile: Account<'info, LearnerProfile>,
     
     /// XP Mint (Token-2022)
+    #[account(
+        mut,
+        address = config.current_mint @ AcademyError::SeasonNotActive,
+    )]
     pub xp_mint: InterfaceAccount<'info, Mint>,
     
     /// Learner's XP token account
@@ -42,6 +48,14 @@ pub struct ClaimAchievement<'info> {
         token::authority = learner,
     )]
     pub learner_token: InterfaceAccount<'info, TokenAccount>,
+    
+    /// Config PDA as mint authority
+    /// CHECK: Derived from config PDA
+    #[account(
+        seeds = [Config::SEED],
+        bump = config.bump,
+    )]
+    pub config_pda: AccountInfo<'info>,
     
     pub token_program: Program<'info, Token2022>,
 }
@@ -56,7 +70,7 @@ pub fn claim_achievement(
         AcademyError::AchievementOutOfBounds
     );
     
-    let config = &ctx.accounts.config;
+    let config = &mut ctx.accounts.config;
     let learner_profile = &mut ctx.accounts.learner_profile;
     
     // Check not already claimed
@@ -74,8 +88,22 @@ pub fn claim_achievement(
     // Mark achievement claimed
     learner_profile.claim_achievement(achievement_index);
     
-    // TODO: Mint XP tokens to learner_token
-    // This requires permanent_delegate authority which the config PDA should have
+    // Mint XP tokens
+    let xp_amount = capped_reward as u64;
+    let config_seeds = &[Config::SEED, &[config.bump]];
+    let signer_seeds = &[&config_seeds[..]];
+    
+    let cpi_accounts = MintTo {
+        mint: ctx.accounts.xp_mint.to_account_info(),
+        to: ctx.accounts.learner_token.to_account_info(),
+        authority: ctx.accounts.config_pda.clone(),
+    };
+    let cpi_ctx = CpiContext::new_with_signer(
+        ctx.accounts.token_program.to_account_info(),
+        cpi_accounts,
+        signer_seeds,
+    );
+    anchor_spl::token_interface::mint_to(cpi_ctx, xp_amount)?;
     
     msg!(
         "Achievement claimed: index={}, xp={}",

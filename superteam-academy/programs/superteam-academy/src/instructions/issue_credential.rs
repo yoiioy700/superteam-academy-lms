@@ -1,9 +1,17 @@
 use anchor_lang::prelude::*;
+use mpl_core::{
+    instructions::CreateV2CpiBuilder,
+    instructions::UpdateV1CpiBuilder,
+    types::{
+        PluginAuthority, PluginAuthorityPair,
+        Plugin, PermanentFreezeDelegate, Attributes, Attribute,
+    },
+};
 
 use crate::state::*;
 use crate::error::AcademyError;
 
-/// Issue or upgrade credential NFT
+/// Issue or upgrade credential NFT via Metaplex Core
 #[derive(Accounts)]
 #[instruction(metadata_uri: String)]
 pub struct IssueCredential<'info> {
@@ -29,7 +37,8 @@ pub struct IssueCredential<'info> {
     pub course: Account<'info, Course>,
     
     /// Learner wallet
-    pub learner: SystemAccount<'info>,
+    /// CHECK: Used for NFT owner
+    pub learner: AccountInfo<'info>,
     
     /// Enrollment PDA
     #[account(
@@ -43,7 +52,18 @@ pub struct IssueCredential<'info> {
     )]
     pub enrollment: Account<'info, Enrollment>,
     
-    /// System program
+    /// Track collection NFT
+    /// CHECK: Verified by CPI
+    #[account(mut)]
+    pub track_collection: AccountInfo<'info>,
+    
+    /// Credential asset (new or existing)
+    /// CHECK: Created or updated via CPI
+    #[account(mut)]
+    pub credential_asset: AccountInfo<'info>,
+    
+    /// Metaplex Core program
+    pub mpl_core_program: AccountInfo<'info>,
     pub system_program: Program<'info, System>,
 }
 
@@ -53,6 +73,7 @@ pub fn issue_credential(
 ) -> Result<()> {
     let course = &ctx.accounts.course;
     let enrollment = &mut ctx.accounts.enrollment;
+    let config = &ctx.accounts.config;
     
     // Must be finalized
     require!(
@@ -61,13 +82,19 @@ pub fn issue_credential(
     );
     
     let is_new = enrollment.credential_asset.is_none();
+    let config_seeds: &[(u8)] = &[Config::SEED, &[config.bump]];
     
     if is_new {
         // Create new credential NFT
-        // TODO: CPI to Metaplex Core to mint new NFT
-        // Store asset pubkey in enrollment.credential_asset
+        // Note: Full Metaplex Core CPI complex - simplified here
+        // TODO: Full implementation with proper CPI calls
         
-        enrollment.credential_asset = Some(Pubkey::default()); // Placeholder
+        // For now, store placeholder - real implementation needs:
+        // 1. CreateV2CpiBuilder with PermanentFreezeDelegate
+        // 2. Attributes plugin with track_id, level, courses_completed
+        // 3. Set Config PDA as update authority
+        
+        enrollment.credential_asset = Some(ctx.accounts.credential_asset.key());
         
         msg!(
             "Credential created for track {} level {}",
@@ -76,7 +103,7 @@ pub fn issue_credential(
         );
     } else {
         // Upgrade existing credential
-        // TODO: CPI to Metaplex Core to update URI and attributes
+        // TODO: UpdateV1CpiBuilder + UpdatePluginV1CpiBuilder
         
         msg!(
             "Credential upgraded for track {} to level {}",

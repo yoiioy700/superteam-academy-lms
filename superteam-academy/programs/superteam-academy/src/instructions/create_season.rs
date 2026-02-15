@@ -1,11 +1,11 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token_interface::{Token2022};
+use anchor_spl::token_interface::{Token2022, token_interface::{Mint, TokenAccount}};
+use anchor_spl::token_2022;
 
 use crate::state::*;
 use crate::error::AcademyError;
 
-/// Create a new season
-/// Creates new Token-2022 mint with soulbound config
+/// Create a new season with Token-2022 XP mint
 #[derive(Accounts)]
 #[instruction(season: u16)]
 pub struct CreateSeason<'info> {
@@ -31,7 +31,7 @@ pub struct CreateSeason<'info> {
         mint::decimals = 0,
         mint::authority = config,
     )]
-    pub xp_mint: InterfaceAccount<'info, anchor_spl::token_interface::Mint>,
+    pub xp_mint: InterfaceAccount<'info, Mint>,
     
     pub token_program: Program<'info, Token2022>,
     pub system_program: Program<'info, System>,
@@ -51,6 +51,10 @@ pub fn create_season(ctx: Context<CreateSeason>, season: u16) -> Result<()> {
     if config.current_season > 0 {
         require!(config.season_closed, AcademyError::SeasonNotClosed);
     }
+    
+    // TODO: Initialize Token-2022 with NonTransferable and PermanentDelegate extensions
+    // This requires manual CPI calls to Token-2022 program
+    // For now, basic mint created - extensions to be added via separate ix or client-side
     
     config.current_season = season;
     config.current_mint = ctx.accounts.xp_mint.key();
