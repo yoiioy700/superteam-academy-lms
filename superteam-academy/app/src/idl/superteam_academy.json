@@ -1,0 +1,416 @@
+{
+  "version": "0.1.0",
+  "name": "superteam_academy",
+  "instructions": [
+    {
+      "name": "initialize",
+      "accounts": [
+        { "name": "payer", "isMut": true, "isSigner": true },
+        { "name": "authority", "isMut": false, "isSigner": false },
+        { "name": "backendSigner", "isMut": false, "isSigner": false },
+        { "name": "config", "isMut": true, "isSigner": false },
+        { "name": "systemProgram", "isMut": false, "isSigner": false },
+        { "name": "rent", "isMut": false, "isSigner": false }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "InitializeParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "createSeason",
+      "accounts": [
+        { "name": "payer", "isMut": true, "isSigner": true },
+        { "name": "config", "isMut": true, "isSigner": false },
+        { "name": "authority", "isMut": false, "isSigner": true },
+        { "name": "xpMint", "isMut": true, "isSigner": true },
+        { "name": "tokenProgram", "isMut": false, "isSigner": false },
+        { "name": "systemProgram", "isMut": false, "isSigner": false },
+        { "name": "rent", "isMut": false, "isSigner": false }
+      ],
+      "args": [
+        { "name": "season", "type": "u16" }
+      ]
+    },
+    {
+      "name": "closeSeason",
+      "accounts": [
+        { "name": "config", "isMut": true, "isSigner": false },
+        { "name": "authority", "isMut": false, "isSigner": true }
+      ],
+      "args": []
+    },
+    {
+      "name": "updateConfig",
+      "accounts": [
+        { "name": "config", "isMut": true, "isSigner": false },
+        { "name": "authority", "isMut": false, "isSigner": true }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "UpdateConfigParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "createCourse",
+      "accounts": [
+        { "name": "payer", "isMut": true, "isSigner": true },
+        { "name": "config", "isMut": false, "isSigner": false },
+        { "name": "authority", "isMut": false, "isSigner": true },
+        { "name": "course", "isMut": true, "isSigner": false },
+        { "name": "prerequisite", "isMut": false, "isSigner": false, "isOptional": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [
+        { "name": "courseId", "type": "string" },
+        {
+          "name": "params",
+          "type": {
+            "defined": "CreateCourseParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "updateCourse",
+      "accounts": [
+        { "name": "course", "isMut": true, "isSigner": false },
+        { "name": "authority", "isMut": false, "isSigner": true }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": "UpdateCourseParams"
+          }
+        }
+      ]
+    },
+    {
+      "name": "initLearner",
+      "accounts": [
+        { "name": "payer", "isMut": true, "isSigner": true },
+        { "name": "learner", "isMut": false, "isSigner": true },
+        { "name": "profile", "isMut": true, "isSigner": false },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": []
+    },
+    {
+      "name": "registerReferral",
+      "accounts": [
+        { "name": "payer", "isMut": true, "isSigner": true },
+        { "name": "learner", "isMut": false, "isSigner": true },
+        { "name": "referrerProfile", "isMut": true, "isSigner": false },
+        { "name": "referrer", "isMut": false, "isSigner": false },
+        { "name": "learnerProfile", "isMut": true, "isSigner": false }
+      ],
+      "args": []
+    },
+    {
+      "name": "claimAchievement",
+      "accounts": [
+        { "name": "backendSigner", "isMut": false, "isSigner": true },
+        { "name": "config", "isMut": true, "isSigner": false },
+        { "name": "learner", "isMut": false, "isSigner": false },
+        { "name": "learnerProfile", "isMut": true, "isSigner": false },
+        { "name": "xpMint", "isMut": true, "isSigner": false },
+        { "name": "learnerToken", "isMut": true, "isSigner": false },
+        { "name": "configPda", "isMut": false, "isSigner": false },
+        { "name": "tokenProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [
+        { "name": "achievementIndex", "type": "u8" },
+        { "name": "xpReward", "type": "u32" }
+      ]
+    },
+    {
+      "name": "awardStreakFreeze",
+      "accounts": [
+        { "name": "backendSigner", "isMut": false, "isSigner": true },
+        { "name": "config", "isMut": false, "isSigner": false },
+        { "name": "learner", "isMut": false, "isSigner": false },
+        { "name": "learnerProfile", "isMut": true, "isSigner": false }
+      ],
+      "args": []
+    },
+    {
+      "name": "enroll",
+      "accounts": [
+        { "name": "payer", "isMut": true, "isSigner": true },
+        { "name": "learner", "isMut": false, "isSigner": true },
+        { "name": "learnerProfile", "isMut": false, "isSigner": false },
+        { "name": "course", "isMut": false, "isSigner": false },
+        { "name": "enrollment", "isMut": true, "isSigner": false },
+        { "name": "prerequisiteEnrollment", "isMut": false, "isSigner": false, "isOptional": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [
+        { "name": "courseId", "type": "string" }
+      ]
+    },
+    {
+      "name": "completeLesson",
+      "accounts": [
+        { "name": "backendSigner", "isMut": false, "isSigner": true },
+        { "name": "config", "isMut": true, "isSigner": false },
+        { "name": "course", "isMut": true, "isSigner": false },
+        { "name": "learner", "isMut": false, "isSigner": false },
+        { "name": "learnerProfile", "isMut": true, "isSigner": false },
+        { "name": "enrollment", "isMut": true, "isSigner": false },
+        { "name": "xpMint", "isMut": true, "isSigner": false },
+        { "name": "learnerToken", "isMut": true, "isSigner": false },
+        { "name": "configPda", "isMut": false, "isSigner": false },
+        { "name": "tokenProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [
+        { "name": "lessonIndex", "type": "u8" }
+      ]
+    },
+    {
+      "name": "finalizeCourse",
+      "accounts": [
+        { "name": "backendSigner", "isMut": false, "isSigner": true },
+        { "name": "config", "isMut": true, "isSigner": false },
+        { "name": "course", "isMut": true, "isSigner": false },
+        { "name": "creator", "isMut": false, "isSigner": false },
+        { "name": "learner", "isMut": false, "isSigner": false },
+        { "name": "enrollment", "isMut": false, "isSigner": false },
+        { "name": "xpMint", "isMut": true, "isSigner": false },
+        { "name": "creatorToken", "isMut": true, "isSigner": false },
+        { "name": "configPda", "isMut": false, "isSigner": false },
+        { "name": "tokenProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": []
+    },
+    {
+      "name": "claimCompletionBonus",
+      "accounts": [
+        { "name": "learner", "isMut": false, "isSigner": true },
+        { "name": "config", "isMut": false, "isSigner": false },
+        { "name": "course", "isMut": false, "isSigner": false },
+        { "name": "learnerProfile", "isMut": true, "isSigner": false },
+        { "name": "enrollment", "isMut": true, "isSigner": false },
+        { "name": "xpMint", "isMut": true, "isSigner": false },
+        { "name": "learnerToken", "isMut": true, "isSigner": false },
+        { "name": "configPda", "isMut": false, "isSigner": false },
+        { "name": "tokenProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": []
+    },
+    {
+      "name": "issueCredential",
+      "accounts": [
+        { "name": "payer", "isMut": true, "isSigner": true },
+        { "name": "backendSigner", "isMut": false, "isSigner": true },
+        { "name": "config", "isMut": false, "isSigner": false },
+        { "name": "course", "isMut": true, "isSigner": false },
+        { "name": "learner", "isMut": false, "isSigner": false },
+        { "name": "enrollment", "isMut": true, "isSigner": false },
+        { "name": "trackCollection", "isMut": true, "isSigner": false },
+        { "name": "credentialAsset", "isMut": true, "isSigner": false },
+        { "name": "mplCoreProgram", "isMut": false, "isSigner": false },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": [
+        { "name": "metadataUri", "type": "string" }
+      ]
+    },
+    {
+      "name": "closeEnrollment",
+      "accounts": [
+        { "name": "learner", "isMut": true, "isSigner": true },
+        { "name": "course", "isMut": false, "isSigner": false },
+        { "name": "enrollment", "isMut": true, "isSigner": false }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Config",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "authority", "type": "publicKey" },
+          { "name": "backendSigner", "type": "publicKey" },
+          { "name": "currentSeason", "type": "u16" },
+          { "name": "currentMint", "type": "publicKey" },
+          { "name": "seasonClosed", "type": "bool" },
+          { "name": "seasonStartedAt", "type": "i64" },
+          { "name": "maxDailyXp", "type": "u32" },
+          { "name": "maxAchievementXp", "type": "u32" },
+          { "name": "reserved", "type": { "array": ["u8", 32] } },
+          { "name": "bump", "type": "u8" }
+        ]
+      }
+    },
+    {
+      "name": "Course",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "courseId", "type": "string" },
+          { "name": "creator", "type": "publicKey" },
+          { "name": "authority", "type": "publicKey" },
+          { "name": "contentTxId", "type": { "array": ["u8", 32] } },
+          { "name": "version", "type": "u16" },
+          { "name": "lessonCount", "type": "u8" },
+          { "name": "difficulty", "type": "u8" },
+          { "name": "xpPerLesson", "type": "u32" },
+          { "name": "trackId", "type": "u16" },
+          { "name": "trackLevel", "type": "u8" },
+          { "name": "prerequisite", "type": { "option": "publicKey" } },
+          { "name": "completionBonusXp", "type": "u32" },
+          { "name": "creatorRewardXp", "type": "u32" },
+          { "name": "minCompletionsForReward", "type": "u16" },
+          { "name": "totalCompletions", "type": "u32" },
+          { "name": "totalEnrollments", "type": "u32" },
+          { "name": "isActive", "type": "bool" },
+          { "name": "createdAt", "type": "i64" },
+          { "name": "updatedAt", "type": "i64" },
+          { "name": "reserved", "type": { "array": ["u8", 16] } },
+          { "name": "bump", "type": "u8" }
+        ]
+      }
+    },
+    {
+      "name": "LearnerProfile",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "authority", "type": "publicKey" },
+          { "name": "currentStreak", "type": "u16" },
+          { "name": "longestStreak", "type": "u16" },
+          { "name": "lastActivityDate", "type": "i64" },
+          { "name": "streakFreezes", "type": "u8" },
+          { "name": "achievementFlags", "type": { "array": ["u64", 4] } },
+          { "name": "xpEarnedToday", "type": "u32" },
+          { "name": "lastXpDay", "type": "u16" },
+          { "name": "referralCount", "type": "u16" },
+          { "name": "hasReferrer", "type": "bool" },
+          { "name": "reserved", "type": { "array": ["u8", 16] } },
+          { "name": "bump", "type": "u8" }
+        ]
+      }
+    },
+    {
+      "name": "Enrollment",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "course", "type": "publicKey" },
+          { "name": "enrolledVersion", "type": "u16" },
+          { "name": "enrolledAt", "type": "i64" },
+          { "name": "completedAt", "type": { "option": "i64" } },
+          { "name": "lessonFlags", "type": { "array": ["u64", 4] } },
+          { "name": "credentialAsset", "type": { "option": "publicKey" } },
+          { "name": "bonusClaimed", "type": "bool" },
+          { "name": "reserved", "type": { "array": ["u8", 7] } },
+          { "name": "bump", "type": "u8" }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "InitializeParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "maxDailyXp", "type": "u32" },
+          { "name": "maxAchievementXp", "type": "u32" }
+        ]
+      }
+    },
+    {
+      "name": "UpdateConfigParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "backendSigner", "type": { "option": "publicKey" } },
+          { "name": "maxDailyXp", "type": { "option": "u32" } },
+          { "name": "maxAchievementXp", "type": { "option": "u32" } }
+        ]
+      }
+    },
+    {
+      "name": "CreateCourseParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "creator", "type": "publicKey" },
+          { "name": "authority", "type": "publicKey" },
+          { "name": "contentTxId", "type": { "array": ["u8", 32] } },
+          { "name": "lessonCount", "type": "u8" },
+          { "name": "difficulty", "type": "u8" },
+          { "name": "xpPerLesson", "type": "u32" },
+          { "name": "trackId", "type": "u16" },
+          { "name": "trackLevel", "type": "u8" },
+          { "name": "prerequisite", "type": { "option": "publicKey" } },
+          { "name": "completionBonusXp", "type": "u32" },
+          { "name": "creatorRewardXp", "type": "u32" },
+          { "name": "minCompletionsForReward", "type": "u16" }
+        ]
+      }
+    },
+    {
+      "name": "UpdateCourseParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "contentTxId", "type": { "option": { "array": ["u8", 32] } } },
+          { "name": "isActive", "type": { "option": "bool" } },
+          { "name": "completionBonusXp", "type": { "option": "u32" } },
+          { "name": "creatorRewardXp", "type": { "option": "u32" } },
+          { "name": "minCompletionsForReward", "type": { "option": "u16" } }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    { "code": 6000, "name": "Unauthorized", "msg": "Unauthorized signer" },
+    { "code": 6001, "name": "CourseNotActive", "msg": "Course not active" },
+    { "code": 6002, "name": "AlreadyEnrolled", "msg": "Already enrolled" },
+    { "code": 6003, "name": "NotEnrolled", "msg": "Not enrolled" },
+    { "code": 6004, "name": "LessonOutOfBounds", "msg": "Lesson index out of bounds" },
+    { "code": 6005, "name": "LessonAlreadyCompleted", "msg": "Lesson already completed" },
+    { "code": 6006, "name": "CourseNotCompleted", "msg": "Not all lessons completed" },
+    { "code": 6007, "name": "CourseAlreadyFinalized", "msg": "Course already finalized" },
+    { "code": 6008, "name": "AchievementAlreadyClaimed", "msg": "Achievement already claimed" },
+    { "code": 6009, "name": "CourseNotFinalized", "msg": "Course not finalized" },
+    { "code": 6010, "name": "BonusAlreadyClaimed", "msg": "Completion bonus already claimed" },
+    { "code": 6011, "name": "SeasonClosed", "msg": "Season already closed" },
+    { "code": 6012, "name": "SelfReferral", "msg": "Cannot refer yourself" },
+    { "code": 6013, "name": "AlreadyReferred", "msg": "Already has a referrer" },
+    { "code": 6014, "name": "ReferrerNotFound", "msg": "Referrer not found" },
+    { "code": 6015, "name": "PrerequisiteNotMet", "msg": "Prerequisite not met" },
+    { "code": 6016, "name": "DailyXPLimitExceeded", "msg": "Daily XP limit exceeded" },
+    { "code": 6017, "name": "UnenrollCooldown", "msg": "Close cooldown not met (24h)" },
+    { "code": 6018, "name": "EnrollmentCourseMismatch", "msg": "Enrollment/course mismatch" },
+    { "code": 6019, "name": "SeasonNotActive", "msg": "Season not active" },
+    { "code": 6020, "name": "Overflow", "msg": "Arithmetic overflow" },
+    { "code": 6021, "name": "InvalidCourseId", "msg": "Invalid course ID length" },
+    { "code": 6022, "name": "CourseIdTooLong", "msg": "Course ID too long (max 32 chars)" },
+    { "code": 6023, "name": "SeasonNotClosed", "msg": "Season not closed" },
+    { "code": 6024, "name": "AlreadyInitialized", "msg": "Already initialized" },
+    { "code": 6025, "name": "LearnerNotInitialized", "msg": "Learner not initialized" },
+    { "code": 6026, "name": "NotEnoughFreezes", "msg": "Not enough streak freezes" },
+    { "code": 6027, "name": "AchievementOutOfBounds", "msg": "Achievement index out of bounds" },
+    { "code": 6028, "name": "InvalidDifficulty", "msg": "Invalid difficulty level" },
+    { "code": 6029, "name": "InvalidTrackLevel", "msg": "Invalid track level" },
+    { "code": 6030, "name": "InvalidSeasonNumber", "msg": "Season numbers must be sequential" },
+    { "code": 6031, "name": "CourseAlreadyExists", "msg": "Course already exists" }
+  ],
+  "metadata": {
+    "address": "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+  }
+}
