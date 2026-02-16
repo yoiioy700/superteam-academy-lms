@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { useLearnerProfile, useXpBalance } from '../hooks/useProgram';
+import { useLearnerProfile, useXpBalance } from '@/hooks/useProgram';
 import { 
   getLevel, 
   getLevelName, 
@@ -12,7 +12,7 @@ import {
   isStreakMilestone,
   ACHIEVEMENTS,
   getTrackName,
-} from '../lib/sdk';
+} from '@/lib/sdk';
 
 export default function Profile() {
   const { profile, loading: profileLoading } = useLearnerProfile();
