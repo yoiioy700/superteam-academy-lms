@@ -2,8 +2,8 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { useLearnerProfile, useXpBalance, useCourses } from '../hooks';
-import { getTrackName, getLevel, getLevelName, getLevelProgress } from '../lib';
+import { useLearnerProfile, useXpBalance, useCourses } from '../hooks/useProgram';
+import { getTrackName, getLevel, getLevelName, getLevelProgress } from '../lib/sdk';
 
 export default function Home() {
   const { connected } = useWallet();
