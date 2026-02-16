@@ -1,10 +1,7 @@
-export type SuperteamAcademy = {
-  "version": "0.1.0";
-  "name": "superteam_academy";
-  ... // The full IDL would be here, but let's create a simplified version for types
-}
+// Simple any type untuk IDL
+export type SuperteamAcademy = any;
 
-// Simplified types for the app
+// Module declaration
 declare module '../idl/superteam_academy.json' {
   const value: any;
   export default value;

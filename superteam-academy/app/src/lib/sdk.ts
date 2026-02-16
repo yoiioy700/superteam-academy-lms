@@ -1,6 +1,6 @@
 import * as anchor from '@coral-xyz/anchor';
 import { PublicKey, SystemProgram, TransactionInstruction } from '@solana/web3.js';
-import { SuperteamAcademy } from './idl/superteam_academy';
+// import { SuperteamAcademy } from './idl/superteam_academy';
 
 export const PROGRAM_ID = new PublicKey('Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS');
 
