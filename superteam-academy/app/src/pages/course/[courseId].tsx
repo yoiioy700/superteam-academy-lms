@@ -3,8 +3,8 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { useEnrollment, useCourses, useLearnerProfile, useLessonProgress } from '../hooks/useProgram';
-import { getTrackName, getDifficultyName, getProgressPercent, isLessonCompleted } from '../lib/sdk';
+import { useEnrollment, useCourses, useLearnerProfile, useLessonProgress } from '../hooks';
+import { getTrackName, getDifficultyName, getProgressPercent, isLessonCompleted } from '../lib';
 import { useState } from 'react';
 
 export default function CourseDetail() {
